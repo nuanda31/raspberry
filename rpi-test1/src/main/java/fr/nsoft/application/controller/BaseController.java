@@ -11,6 +11,9 @@ import com.pi4j.io.gpio.RaspiPin;
 
 @RestController
 public class BaseController {
+	
+	private GpioPinDigitalOutput gpio01Pin = null;
+	private ButtonController buttonController = null;
 
 	@RequestMapping("/")
 	public String index() {
@@ -21,22 +24,42 @@ public class BaseController {
 	public String lightLed() {
 		GpioController controller = null;
 		try {
-			controller = GpioFactory.getInstance();
-			GpioPinDigitalOutput digitalOutput = controller.provisionDigitalOutputPin(RaspiPin.GPIO_01, "PIN_LED", PinState.HIGH);
-			digitalOutput.setShutdownOptions(true, PinState.LOW);
+//			if (gpio01Pin == null) {
+				controller = GpioFactory.getInstance();
+				gpio01Pin = controller.provisionDigitalOutputPin(RaspiPin.GPIO_01, "PIN_LED", PinState.HIGH);
+//			}
+			gpio01Pin.setShutdownOptions(true, PinState.LOW);
 			Thread.sleep(2000);
-			digitalOutput.toggle();
+			gpio01Pin.toggle();
 			Thread.sleep(2000);
-			digitalOutput.toggle();
+			gpio01Pin.toggle();
 			Thread.sleep(2000);
-			digitalOutput.low();
+			gpio01Pin.low();
 		} catch (InterruptedException e) {
 			System.out.println(e.getMessage());
 		} finally {
 			if (controller != null) {
 				controller.shutdown();
+				controller.unprovisionPin(gpio01Pin);
 			}
 		}
-		return "";
+		return "OK";
 	}
+	
+	@RequestMapping("/button")
+	public String updateButton() {
+		String buttonStat = "Button : Off";
+		
+		if (buttonController == null) {
+			buttonController = new ButtonController();
+			buttonStat = "Button : On";
+		} else {
+			buttonController.shutdown();
+			buttonController = null;
+			buttonStat = "Button : Off";
+		}
+		
+		return buttonStat;
+	}
+	
 }

@@ -29,6 +29,7 @@ public class BaseController {
 			Thread.sleep(2000);
 			digitalOutput.toggle();
 			Thread.sleep(2000);
+			digitalOutput.low();
 		} catch (InterruptedException e) {
 			System.out.println(e.getMessage());
 		} finally {

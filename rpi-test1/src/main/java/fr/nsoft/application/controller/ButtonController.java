@@ -26,6 +26,7 @@ public class ButtonController {
 			
 			@Override
 			public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent arg0) {
+				System.out.println("Button : "+gpio02Pin.getState());
 				try {
 					gpio01Pin.toggle();
 					Thread.sleep(2000);
